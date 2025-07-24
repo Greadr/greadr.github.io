@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ГеоЧекап - Макет интерфейса</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: url('main.png') no-repeat center center;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .geocheckup-panel {
+            position: absolute;
+            top: 55px;
+            left: 0px;
+            width: 380px;
+            max-height: calc(100vh - 40px);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+
+        
+        .results-section {
+            padding: 20px;
+        }
+        
+        .score-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .overall-score {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(#10b981 0deg 313deg, #e5e7eb 313deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            position: relative;
+        }
+        
+        .score-circle::before {
+            content: '';
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+        }
+        
+        .score-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #374151;
+            z-index: 1;
+        }
+        
+        .recommendation {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .recommendation.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .recommendation.danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .factors-list {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        
+        .factor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+        
+        .factor-name {
+            color: #374151;
+        }
+        
+        .factor-score {
+            font-weight: 600;
+            color: #059669;
+        }
+        
+
+        
+        .emoji {
+            font-style: normal;
+        }
+        
+
+        
+        /* Раскрывающиеся разделы */
+        .expandable-section {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .section-header {
+            padding: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            background: #f9fafb;
+        }
+        
+        .section-header:hover {
+            background: #f3f4f6;
+        }
+        
+        .section-content {
+            padding: 0 12px 12px 12px;
+            background: white;
+            border-top: 1px solid #f1f5f9;
+        }
+        
+        .expand-arrow {
+            font-size: 10px;
+            transition: transform 0.2s ease;
+            display: inline-block;
+            width: 12px;
+        }
+        
+        .expand-arrow.expanded {
+            transform: rotate(90deg);
+        }
+        
+        .detail-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .detail-score {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #f0fdf4;
+            color: #166534;
+        }
+        
+        .detail-score.negative {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+        
+        .detail-score:before {
+            content: '';
+        }
+        
+        .detail-desc {
+            font-size: 11px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+        
+        /* Анимация для раскрытия */
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .section-content.expanded {
+            max-height: 500px;
+            transition: max-height 0.3s ease-in;
+        }
+    </style>
+</head>
+<body>
+    <div class="geocheckup-panel">
+        <!-- Заголовок панели -->
+        <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 16px; font-weight: 600; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+            <span style="font-style: normal;">🗺️</span>
+            ГеоЧекап: Результаты анализа
+        </div>
+        
+        <!-- Результаты анализа -->
+        <div class="results-section">
+            <div class="score-card">
+                <div class="overall-score">
+                    <div class="score-circle">
+                        <div class="score-value">87</div>
+                    </div>
+                    <div style="font-size: 12px; color: #6b7280;">Общий скор</div>
+                </div>
+                
+                <div class="recommendation">
+                    <span class="emoji">✅</span> ОДОБРИТЬ
+                </div>
+                
+                <div class="metric-row">
+                    <span class="metric-label">Прогноз оборота (через 1 год)</span>
+                    <span class="metric-value">8.4 млн ₽/мес</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Прибыль партнёра</span>
+                    <span class="metric-value">122.3 тыс. ₽/мес</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">ПВЗ поблизости</span>
+                    <span class="metric-value">3 шт</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Население поблизости</span>
+                    <span class="metric-value">10,241 чел.</span>
+                </div>
+            </div>
+            
+            <!-- Разбивка по разделам -->
+            <div class="section-title">
+                <span class="emoji">📊</span>
+                Анализ по разделам
+            </div>
+            
+            <!-- Финансы -->
+            <div class="expandable-section" style="margin-bottom: 16px;">
+                <div class="section-header" onclick="toggleSection('finances')">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-size: 13px; color: #374151; display: flex; align-items: center; gap: 6px;">
+                            <span class="expand-arrow" id="finances-arrow">▶</span>
+                            💰 Финансы (микроуровень)
+                        </span>
+                        <span style="font-weight: 600; color: #059669;">92/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 92%;"></div>
+                    </div>
+                </div>
+                <div class="section-content" id="finances-content" style="display: none;">
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">Прогнозный оборот</span>
+                            <span class="detail-score">+28.5</span>
+                        </div>
+                        <div class="detail-desc">8.4 млн ₽/мес (выше медианы региона на 15%)</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">PnL партнёра</span>
+                            <span class="detail-score">+22.1</span>
+                        </div>
+                        <div class="detail-desc">122.3 тыс. ₽/мес при площади 120 м²</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">PnL WB</span>
+                            <span class="detail-score">+18.7</span>
+                        </div>
+                        <div class="detail-desc">Маржинальность 24%, окупаемость 8 мес</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">Оптимальность площади</span>
+                            <span class="detail-score">+22.2</span>
+                        </div>
+                        <div class="detail-desc">120 м² - оптимально для данной территории с учетом конкуренции</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Территория -->
+            <div class="expandable-section" style="margin-bottom: 16px;">
+                <div class="section-header" onclick="toggleSection('territory')">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-size: 13px; color: #374151; display: flex; align-items: center; gap: 6px;">
+                            <span class="expand-arrow" id="territory-arrow">▶</span>
+                            🏘️ Территория (600м радиус)
+                        </span>
+                        <span style="font-weight: 600; color: #059669;">85/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+                <div class="section-content" id="territory-content" style="display: none;">
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">Обороты соседних ПВЗ</span>
+                            <span class="detail-score">+19.8</span>
+                        </div>
+                        <div class="detail-desc">2 ПВЗ: фирменный 15.2М/мес, партнёрский 8.7М/мес</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">Загрузка соседей</span>
+                            <span class="detail-score">+24.3</span>
+                        </div>
+                        <div class="detail-desc">Средняя загрузка 78% - есть резерв для роста</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">Население</span>
+                            <span class="detail-score">+18.2</span>
+                        </div>
+                        <div class="detail-desc">10.2k чел в радиусе, плотность 1.7k чел/км²</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">Гравитационная модель</span>
+                            <span class="detail-score">+12.4</span>
+                        </div>
+                        <div class="detail-desc">Из 10.2k чел в радиусе, 3.4k будут предпочитать данный ПВЗ</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">Новостройки</span>
+                            <span class="detail-score">+10.3</span>
+                        </div>
+                        <div class="detail-desc">3 дома поблизости, заселение 2024-2025</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- План открытий -->
+            <div class="expandable-section" style="margin-bottom: 16px;">
+                <div class="section-header" onclick="toggleSection('planning')">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-size: 13px; color: #374151; display: flex; align-items: center; gap: 6px;">
+                            <span class="expand-arrow" id="planning-arrow">▶</span>
+                            📈 План открытий (макроуровень)
+                        </span>
+                        <span style="font-weight: 600; color: #f59e0b;">65/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%;"></div>
+                    </div>
+                </div>
+                <div class="section-content" id="planning-content" style="display: none;">
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">Конъюнктурные факторы</span>
+                            <span class="detail-score negative">-4</span>
+                        </div>
+                        <div class="detail-desc">Не входит в приоритетные территории (не СЗФО)</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">План в городе</span>
+                            <span class="detail-score">+37.9</span>
+                        </div>
+                        <div class="detail-desc">Тула: план - ещё 14 ПВЗ до конца года</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-header">
+                            <span class="detail-label">Временные факторы</span>
+                            <span class="detail-score">+31.1</span>
+                        </div>
+                        <div class="detail-desc">Q4 2025: нужно активно в этом квартале</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Топ факторы -->
+            <div class="section-title">
+                <span class="emoji">🔍</span>
+                Ключевые факторы
+            </div>
+            
+            <div class="factors-list">
+                <div class="factor-item">
+                    <span class="factor-name">План в городе</span>
+                    <span class="factor-score">+37.9</span>
+                </div>
+                <div class="factor-item">
+                    <span class="factor-name">Временные факторы</span>
+                    <span class="factor-score">+31.1</span>
+                </div>
+                <div class="factor-item">
+                    <span class="factor-name">Прогнозный оборот</span>
+                    <span class="factor-score">+28.5</span>
+                </div>
+                <div class="factor-item">
+                    <span class="factor-name">Загрузка соседей</span>
+                    <span class="factor-score">+24.3</span>
+                </div>
+                <div class="factor-item">
+                    <span class="factor-name">Конъюнктурные факторы</span>
+                    <span class="factor-score negative" style="background: #fef2f2; color: #991b1b;">-4.0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const arrow = document.getElementById(sectionId + '-arrow');
+            
+            if (content.style.display === 'none' || content.style.display === '') {
+                // Раскрываем раздел
+                content.style.display = 'block';
+                content.classList.add('expanded');
+                arrow.classList.add('expanded');
+                arrow.textContent = '▼';
+            } else {
+                // Скрываем раздел
+                content.classList.remove('expanded');
+                arrow.classList.remove('expanded');
+                arrow.textContent = '▶';
+                
+                // Задержка для анимации
+                setTimeout(() => {
+                    content.style.display = 'none';
+                }, 300);
+            }
+        }
+        
+        // Добавляем hover эффекты для заголовков разделов
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f3f4f6';
+            });
+            
+            header.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '#f9fafb';
+            });
+        });
+        
+        // Консольный лог для демонстрации
+        console.log('ГеоЧекап: Панель результатов загружена');
+        console.log('Доступные разделы: Финансы, Территория, План открытий');
+    </script>
+</body>
+</html> 
